@@ -1,0 +1,62 @@
+%{
+#include <stdio.h>
+
+int line_count = 1;
+int comment_depth = 0;
+
+%}
+
+tIDENTIFIER [a-z]
+tINTEGER [1-9][0-9]* 
+
+%x comment
+
+
+%%
+
+\n { line_count++; }
+[ \t\r]+ {}
+
+"//".* {} 
+
+"/*" {comment_depth++; BEGIN(comment);}
+<comment>"/*" {comment_depth++;}
+<comment>[^*\n] {};
+<comment>"*"+[^/\n] {};
+<comment>. {};
+<comment>"*/" {
+    comment_depth--;
+    if(comment_depth == 0){
+	BEGIN(INITIAL); 
+	}
+}
+<comment>\n {line_count++;}
+
+"*/" {
+    printf("%d_ILLEGAL_CHARACTER_(*)\n", line_count);
+    printf("%d_ILLEGAL_CHARACTER_(/)\n", line_count);
+}
+
+"+" { printf("%d_tPLUS\n", line_count); }
+"-" { printf("%d_tMINUS\n", line_count); }
+"*" { printf("%d_tMUL\n", line_count); }
+"^" { printf("%d_tEXP\n", line_count); }
+"(" { printf("%d_tLPR\n", line_count); }
+")" { printf("%d_tRPR\n", line_count); }
+"=" { printf("%d_tASSIGN\n", line_count); }
+"," { printf("%d_tCOMMA\n", line_count); }
+";" { printf("%d_tSEMICOLON\n", line_count); }
+"calculate" { printf("%d_tCALCULATE\n", line_count); }
+"D" { printf("%d_tDERIVATION\n", line_count); }
+"I" { printf("%d_tINTEGRATION\n", line_count); }
+
+
+
+{tIDENTIFIER} { printf("%d_tIDENTIFIER_(%s)\n", line_count, yytext);} 
+{tINTEGER} { printf("%d_tINTEGER_(%s)\n", line_count, yytext); }
+. { printf("%d_ILLEGAL_CHARACTER_(%s)\n",line_count,yytext); }
+%%
+
+int main(){
+    yylex();
+}

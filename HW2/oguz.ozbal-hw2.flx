@@ -1,0 +1,29 @@
+%option noyywrap
+%{
+#include "oguz.ozbal-hw2.tab.h"
+%}
+
+%%
+
+"calculate"        { return tCALCULATE; }
+"I"                { return tINTEGRATION; }
+"D"                { return tDERIVATION; }
+
+"+"                { return tPLUS; }
+"-"                { return tMINUS; }
+"*"                { return tMUL; }
+"^"                { return tEXP; }
+"("                { return tLPR; }
+")"                { return tRPR; }
+"="                { return tASSIGN; }
+","                { return tCOMMA; }
+";"                { return tSEMICOLON; }
+
+[0-9]+             { return tINTEGER; }
+[a-z]              { return tIDENTIFIER; }
+
+[ \t\r\n]+         { /* boşlukları yoksay */    }
+
+.                  { return yytext[0]; }
+
+%%
