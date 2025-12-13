@@ -1,0 +1,56 @@
+%{
+#include <stdio.h>
+#include <string.h>
+#include "oguz.ozbal-hw3.h"
+#include "oguz.ozbal-hw3.tab.h"
+
+int lineCount = 1;
+%}
+
+%option noyywrap
+
+%%
+
+"calculate" { 
+    extern int currentCalcLine;
+    currentCalcLine = lineCount;
+    return tCALC; 
+}
+"D"         { return tDERIV; }
+"I"         { return tINTEG; }
+"="         { return tASSIGN; }
+"+"         { return tPLUS; }
+"-"         { return tMINUS; }
+"*"         { return tMULT; }
+"/"         { return tDIV; }
+"^"         { return tPOWER; }
+","         { return tCOMMA; }
+"("         { 
+    extern int lastLPARLine;
+    lastLPARLine = lineCount;
+    return tLPAR; 
+}
+")"         { 
+    extern int lastRPARLine;
+    lastRPARLine = lineCount;
+    return tRPAR; 
+}
+";"         { return tSEMI; }
+
+
+[0-9]+ {
+    yylval.iVal = atoi(yytext);
+    return tNUMBER;
+}
+
+[a-z] {
+    yylval.idInfo.name = strdup(yytext);
+    yylval.idInfo.line = lineCount;
+    return tIDENT;
+}
+
+[\n]    { lineCount++; }
+[ \t\r] ; 
+.       { return yytext[0]; }
+
+%%

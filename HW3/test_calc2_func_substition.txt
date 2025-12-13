@@ -1,0 +1,4 @@
+$f(x,y) = 3x^2 + 4xy;
+calculate f(a,5);
+calculate f(a,a);
+
